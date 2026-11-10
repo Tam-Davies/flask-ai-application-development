@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ well.name }} | PetroView{% endblock %}
+
+{% block content %}
+
+<h1>{{ well.name }} Details</h1>
+<p class="subtitle">Petroleum well information and production profile.</p>
+
+<div class="details-card">
+
+    <div class="detail-item">
+        <span>Well ID</span>
+        <strong>{{ well.id }}</strong>
+    </div>
+
+    <div class="detail-item">
+        <span>Well Name</span>
+        <strong>{{ well.name }}</strong>
+    </div>
+
+    <div class="detail-item">
+        <span>Field</span>
+        <strong>{{ well.field }}</strong>
+    </div>
+
+    <div class="detail-item">
+        <span>Well Depth</span>
+        <strong>{{ well.depth_m }} m</strong>
+    </div>
+
+    <div class="detail-item">
+        <span>Production Rate</span>
+        <strong>{{ well.production_bopd }} BOPD</strong>
+    </div>
+
+</div>
+
+<a href="{{ url_for('dashboard') }}" class="btn">
+    Back to Dashboard
+</a>
+
+{% endblock %}

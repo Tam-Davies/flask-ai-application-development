@@ -1,7 +1,17 @@
 
-from flask import Flask, render_template
+import os
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, flash
+
+load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+
+if not app.secret_key:
+    raise RuntimeError("SECRET_KEY environment variable is not configured")
+
+
 
 wells = [
     {
@@ -35,7 +45,21 @@ def home():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html", wells=wells)
+    search = request.args.get("search", "").strip().lower()
+
+    filtered_wells = [
+        well for well in wells
+        if search in well["name"].lower()
+        or search in well["field"].lower()
+    ]
+
+    return render_template(
+        "dashboard.html",
+        wells=filtered_wells,
+        all_wells=wells,
+        search=search
+    )
+
 
 
 @app.route("/well/<int:well_id>")
@@ -49,6 +73,47 @@ def well_details(well_id):
         return "Well not found", 404
 
     return render_template("well_details.html", well=well)
+
+
+
+@app.route("/add-well", methods=["GET", "POST"])
+def add_well():
+
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip()
+        field = request.form.get("field", "").strip()
+        depth = request.form.get("depth_m", "").strip()
+        production = request.form.get("production_bopd", "").strip()
+
+        if not name or not field or not depth or not production:
+            flash("All fields are required.", "error")
+            return redirect(url_for("add_well"))
+
+        try:
+            depth = float(depth)
+            production = float(production)
+
+            if depth <= 0 or production < 0:
+                raise ValueError
+
+        except ValueError:
+            flash("Enter valid positive depth and non-negative production values.", "error")
+            return redirect(url_for("add_well"))
+
+        new_well = {
+            "id": max(w["id"] for w in wells) + 1,
+            "name": name,
+            "field": field,
+            "depth_m": depth,
+            "production_bopd": production
+        }
+
+        wells.append(new_well)
+
+        return redirect(url_for("dashboard"))
+
+    return render_template("add_well.html")
 
 
 if __name__ == "__main__":

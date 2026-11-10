@@ -1,0 +1,41 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add Well | PetroView{% endblock %}
+
+{% block content %}
+
+<h1>Register New Well</h1>
+<p class="subtitle">Enter the petroleum well information below.</p>
+
+<div class="details-card">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p class="message {{ category }}">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+
+        <label>Well Name</label>
+        <input type="text" name="name" required>
+
+        <label>Field</label>
+        <input type="text" name="field" required>
+
+        <label>Well Depth (m)</label>
+        <input type="number" name="depth_m" min="0.01" step="any" required>
+
+        <label>Production Rate (BOPD)</label>
+        <input type="number" name="production_bopd" min="0" step="any" required>
+
+        <button type="submit" class="btn">Register Well</button>
+
+    </form>
+
+</div>
+
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+
+{% endblock %}

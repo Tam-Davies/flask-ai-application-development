@@ -8,26 +8,71 @@
 <h1>Well Dashboard</h1>
 <p class="subtitle">Overview of registered petroleum wells.</p>
 
+<!-- Search Form -->
+<form method="GET" action="{{ url_for('dashboard') }}" class="search-form">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search by well name or field..."
+        value="{{ search }}"
+    >
+
+    <button type="submit" class="btn">Search</button>
+
+    <a href="{{ url_for('dashboard') }}">Clear</a>
+
+</form>
+
+<!-- Add New Well -->
+<a href="{{ url_for('add_well') }}" class="btn">
+    + Add New Well
+</a>
+
+<!-- Dashboard Statistics -->
 <div class="stats">
+
     <div class="stat-card">
         <h3>Total Wells</h3>
-        <p>{{ wells|length }}</p>
+        <p>{{ all_wells|length }}</p>
     </div>
 
     <div class="stat-card">
         <h3>Average Well Depth</h3>
-        <p>{{ (wells|sum(attribute='depth_m') / wells|length)|round(0) }} m</p>
+        <p>
+            {{ (all_wells|sum(attribute='depth_m') / all_wells|length)|round(0) }} m
+        </p>
     </div>
 
     <div class="stat-card">
         <h3>Total Production</h3>
-        <p>{{ wells|sum(attribute='production_bopd') }} BOPD</p>
+        <p>{{ all_wells|sum(attribute='production_bopd') }} BOPD</p>
     </div>
+
 </div>
 
+<!-- Well Production and Depth Charts -->
+<h2>Well Data Visualization</h2>
+
+<div class="charts-container">
+
+    <div class="chart-card">
+        <h3>Production Comparison</h3>
+        <canvas id="productionChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Well Depth Comparison</h3>
+        <canvas id="depthChart"></canvas>
+    </div>
+
+</div>
+
+<!-- Well Records Table -->
 <h2>Well Records</h2>
 
 <table>
+
     <thead>
         <tr>
             <th>Well ID</th>
@@ -40,21 +85,86 @@
     </thead>
 
     <tbody>
+
         {% for well in wells %}
+
         <tr>
             <td>{{ well.id }}</td>
             <td>{{ well.name }}</td>
             <td>{{ well.field }}</td>
             <td>{{ well.depth_m }}</td>
             <td>{{ well.production_bopd }}</td>
+
             <td>
                 <a href="{{ url_for('well_details', well_id=well.id) }}">
                     View
                 </a>
             </td>
         </tr>
+
+        {% else %}
+
+        <tr>
+            <td colspan="6">No matching wells found.</td>
+        </tr>
+
         {% endfor %}
+
     </tbody>
+
 </table>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const wellNames = {{ all_wells | map(attribute='name') | list | tojson }};
+    const productionData = {{ all_wells | map(attribute='production_bopd') | list | tojson }};
+    const depthData = {{ all_wells | map(attribute='depth_m') | list | tojson }};
+
+    // Production Chart
+    new Chart(document.getElementById('productionChart'), {
+        type: 'bar',
+        data: {
+            labels: wellNames,
+            datasets: [{
+                label: 'Production (BOPD)',
+                data: productionData,
+                backgroundColor: '#087f5b'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+
+    // Well Depth Chart
+    new Chart(document.getElementById('depthChart'), {
+        type: 'bar',
+        data: {
+            labels: wellNames,
+            datasets: [{
+                label: 'Well Depth (m)',
+                data: depthData,
+                backgroundColor: '#2878a8'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+</script>
 
 {% endblock %}
