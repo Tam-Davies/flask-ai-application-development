@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home | PetroView{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <h1>Petroleum Well Monitoring Dashboard</h1>
+
+    <p>
+        Monitor petroleum well information, explore field records,
+        and access production data through a simple web interface.
+    </p>
+
+    <a href="{{ url_for('dashboard') }}" class="btn">
+        View Well Dashboard
+    </a>
+</section>
+
+{% endblock %}

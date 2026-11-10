@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 import requests
 
 app = Flask(__name__)
+
 # Well data
 wells = [
     {"id": 1, "name": "Well A", "field": "Escravos", "depth_m": 2500},

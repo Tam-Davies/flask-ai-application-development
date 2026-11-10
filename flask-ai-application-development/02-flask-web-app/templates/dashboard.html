@@ -1,0 +1,60 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | PetroView{% endblock %}
+
+{% block content %}
+
+<h1>Well Dashboard</h1>
+<p class="subtitle">Overview of registered petroleum wells.</p>
+
+<div class="stats">
+    <div class="stat-card">
+        <h3>Total Wells</h3>
+        <p>{{ wells|length }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Average Well Depth</h3>
+        <p>{{ (wells|sum(attribute='depth_m') / wells|length)|round(0) }} m</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Total Production</h3>
+        <p>{{ wells|sum(attribute='production_bopd') }} BOPD</p>
+    </div>
+</div>
+
+<h2>Well Records</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Well ID</th>
+            <th>Well Name</th>
+            <th>Field</th>
+            <th>Depth (m)</th>
+            <th>Production (BOPD)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for well in wells %}
+        <tr>
+            <td>{{ well.id }}</td>
+            <td>{{ well.name }}</td>
+            <td>{{ well.field }}</td>
+            <td>{{ well.depth_m }}</td>
+            <td>{{ well.production_bopd }}</td>
+            <td>
+                <a href="{{ url_for('well_details', well_id=well.id) }}">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
