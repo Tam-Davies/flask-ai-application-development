@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Home | PetroWell Manager{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <h1>Petroleum Well Management System</h1>
+
+    <p>
+        Manage petroleum well records, monitor production data,
+        and maintain your well information in one place.
+    </p>
+
+    <div class="hero-actions">
+        <a href="{{ url_for('wells') }}" class="btn">
+            View All Wells
+        </a>
+
+        <a href="{{ url_for('add_well') }}" class="btn btn-secondary">
+            Add New Well
+        </a>
+    </div>
+</section>
+
+{% endblock %}
